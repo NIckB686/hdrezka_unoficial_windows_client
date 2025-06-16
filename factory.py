@@ -3,7 +3,7 @@ import asyncio
 from PySide6.QtCore import QObject, Signal
 from PySide6.QtGui import QPixmap
 
-from myInterface import CardFrameWidget
+from card_frame_widget import CardFrameWidget
 from network_layer import MovieGateway, MovieMeta
 
 
@@ -17,12 +17,10 @@ class CardFactory(QObject):
 
     # Этот метод надо будет переработать -------------------------------------------------------------------
     async def build(self, metas: list[MovieMeta]):
-        widgets = []
         for meta in metas:
             w = CardFrameWidget(meta.title, meta.year, meta.url)
             self.new_card.emit(w)
             asyncio.create_task(self._populate(w, meta.img_url))
-
 
     async def _populate(self, widget: CardFrameWidget, url: str):
         try:
@@ -33,5 +31,3 @@ class CardFactory(QObject):
             print('Добавлен пиксмап')
         except Exception:
             widget.set_error()
-
-
