@@ -12,8 +12,9 @@ class Ui_MainWindow(QWidget):
         self._setup_ui()
 
     def _setup_ui(self) -> None:
-        self.stackedWidget = StackedWidget()
         self.layout = QVBoxLayout(self)
+        self.stackedWidget = StackedWidget()
+
         self.layout.addWidget(self.stackedWidget)
 
 

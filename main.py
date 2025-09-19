@@ -1,4 +1,5 @@
 import asyncio
+import logging
 
 from PySide6.QtWidgets import QMainWindow
 from qasync import QEventLoop
@@ -6,6 +7,10 @@ from qasync import QEventLoop
 from factory import CardFactory
 from myInterface import *
 from network_layer import MovieGateway
+
+logger = logging.getLogger(__name__)
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(name)s: %(message)s')
 
 
 class MainWindow(QMainWindow):
@@ -22,19 +27,17 @@ class MainWindow(QMainWindow):
 
     def _connect_signals(self) -> None:
         self.cards_factory.new_card.connect(self.ui.stackedWidget.main_page.cards_container.add_widget)
-        print('Сигнал присоединён к слоту')
+        logger.debug('Сигнал присоединён к слоту')
 
     async def put_cards(self):
-        # self.gw = MovieGateway()
-        # self.cards_factory = CardFactory(self.gw)
-        print('Начато добавление карточек...')
-        cards = await self.gw.fetch_listening(self.gw.url_builder())
+        logger.debug('Начато добавление карточек')
+        cards = await self.gw.fetch_listening(self.gw.build_url())
         await self.cards_factory.build(cards)
 
     async def async_close(self):
         await self.gw.close_session()
         QApplication.quit()
-        print('Приложение закрылось')
+        logger.info('Приложение завершило работу')
 
     def closeEvent(self, event):
         self.loop.create_task(self.async_close())
@@ -42,7 +45,7 @@ class MainWindow(QMainWindow):
 
 
 async def main() -> None:
-    print('создан и установлен ивентлуп')
+    logger.debug('Создан и установлен ивентлуп')
     gw = MovieGateway()
     factory = CardFactory(gw)
     app.window = MainWindow(gw, factory)
@@ -50,7 +53,7 @@ async def main() -> None:
 
 
 if __name__ == '__main__':
-    app = QApplication([])
+    app = QApplication()
     loop = QEventLoop(app)
     asyncio.set_event_loop(loop)
     with loop:

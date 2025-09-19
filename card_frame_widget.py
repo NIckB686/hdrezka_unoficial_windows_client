@@ -29,8 +29,8 @@ class CardFrameWidget(QFrame):
         self._attrs.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
 
         self.layout.addWidget(self._poster, alignment=Qt.AlignmentFlag.AlignCenter)
-        self.layout.addWidget(self._title, alignment=Qt.AlignmentFlag.AlignCenter)
-        self.layout.addWidget(self._attrs, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.layout.addWidget(self._title, alignment=Qt.AlignmentFlag.AlignTop)
+        self.layout.addWidget(self._attrs, alignment=Qt.AlignmentFlag.AlignTop)
 
     def set_pixmap(self, pixmap: QPixmap):
         self._poster.setPixmap(pixmap)
