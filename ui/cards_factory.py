@@ -5,19 +5,18 @@ from typing import Generator
 from PySide6.QtCore import QObject, Signal
 from PySide6.QtGui import QPixmap
 
-from network_layer import MovieGateway, MovieMeta
+from network_layer import MovieMeta, gateway
 from .card_frame_widget import CardFrameWidget
 
 logger = logging.getLogger(__name__)
 
 
-
 class CardFactory(QObject):
     new_card = Signal(CardFrameWidget)
 
-    def __init__(self, gw: MovieGateway):
+    def __init__(self):
         super().__init__()
-        self._gw = gw
+        self._gw = gateway
         logger.debug('Создана фабрика карточек')
 
     def build_card(self, metas: Generator[MovieMeta]):
@@ -32,6 +31,6 @@ class CardFactory(QObject):
             pix = QPixmap()
             pix.loadFromData(data)
             widget.set_pixmap(pix)
-            logger.debug('Добавлен пиксмап')
+            logger.debug('Добавлен pixmap')
         except Exception:
             widget.set_error()

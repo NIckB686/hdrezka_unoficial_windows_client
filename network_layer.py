@@ -37,7 +37,10 @@ class MovieGateway:
 
     async def get_session(self) -> aiohttp.ClientSession:
         if self._s is None or self._s.closed:
-            self._s = aiohttp.ClientSession(timeout=self.timeout)
+            self._s = aiohttp.ClientSession(
+                timeout=self.timeout,
+                raise_for_status=True
+            )
             logger.debug('Создана интернет-сессия')
         return self._s
 
@@ -71,7 +74,6 @@ class MovieGateway:
             try:
                 logger.debug('Начато скачивание страницы')
                 async with session.get(link) as r:
-                    r.raise_for_status()
                     html = await r.text()
                     return html
 
@@ -91,4 +93,7 @@ class MovieGateway:
         async with session.get(url) as r:
             r.raise_for_status()
             logger.debug('Получена картинка')
-            return await r.read()
+            return await r.content.read()
+
+
+gateway = MovieGateway()

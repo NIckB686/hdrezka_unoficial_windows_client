@@ -1,56 +1,30 @@
-from PySide6.QtCore import Signal, Qt
-from PySide6.QtWidgets import QFrame, QHBoxLayout, QPushButton, QLineEdit, QSizePolicy, QWidget, QScrollArea, \
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QHBoxLayout, QPushButton, QSizePolicy, QWidget, QScrollArea, \
     QGridLayout, QVBoxLayout
 
 from ui.card_frame_widget import CardFrameWidget
 
 
-class MainHeaderWidget(QFrame):
-    menu_clicked = Signal()
-    continue_clicked = Signal()
-    profile_clicked = Signal()
-
-    def __init__(self, parent=None) -> None:
-        super().__init__(parent)
+class MainPage(QWidget):
+    def __init__(self) -> None:
+        super().__init__()
         self._setup_ui()
 
     def _setup_ui(self) -> None:
-        self.main_layout = QHBoxLayout(self)
-        self.main_layout.setContentsMargins(8, 8, 8, 8)
-        self.main_layout.setSpacing(6)
+        self.layout = QVBoxLayout(self)
 
-        self.menu_btn = QPushButton(self)
-        self.menu_btn.setText('Меню')
-        self.menu_btn.clicked.connect(self.menu_clicked)
+        self.body_widget = QWidget()
+        self.body_layout = QHBoxLayout(self.body_widget)
+        self.body_layout.setContentsMargins(0, 0, 0, 0)
 
-        self.searchbar = QLineEdit(self)
-        self.searchbar.setPlaceholderText('Поиск')
-        self.searchbar.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+        # self.side_menu = SideMenu()
+        self.cards_container = MainBodyScrollArea(self)
+        self.cards_container.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
-        self.bookmarks_btn = QPushButton(self)
-        self.bookmarks_btn.setText('Закладки')
+        # self.body_layout.addWidget(self.side_menu)
+        self.body_layout.addWidget(self.cards_container)
 
-        self.continue_btn = QPushButton(self)
-        self.continue_btn.setText('Досмотреть')
-        self.continue_btn.clicked.connect(self.continue_clicked)
-
-        self.profile_btn = QPushButton(self)
-        self.profile_btn.setText('Профиль')
-        self.profile_btn.clicked.connect(self.profile_clicked)
-
-        self.center_box = QWidget()
-        self.center_box.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
-        self.center_layout = QHBoxLayout(self.center_box)
-        self.center_layout.setContentsMargins(0, 0, 0, 0)
-        self.center_layout.addStretch()
-        self.center_layout.addWidget(self.searchbar)
-        self.center_layout.addStretch()
-
-        self.main_layout.addWidget(self.menu_btn)
-        self.main_layout.addWidget(self.center_box, 1)
-        self.main_layout.addWidget(self.bookmarks_btn)
-        self.main_layout.addWidget(self.continue_btn)
-        self.main_layout.addWidget(self.profile_btn)
+        self.layout.addWidget(self.body_widget)
 
 
 class MainBodyScrollArea(QScrollArea):
@@ -85,6 +59,7 @@ class MainBodyScrollArea(QScrollArea):
             self.row += 1
             self.col = 0
 
+    # Метод нужно будет переименовать
     def connect_card_clicked_signal(self):
         ...
 
@@ -101,31 +76,6 @@ class MainBodyScrollArea(QScrollArea):
                 w.deleteLater()
 
 
-class MainPage(QWidget):
-    def __init__(self, parent=None) -> None:
-        super().__init__(parent)
-        self._setup_ui()
-
-    def _setup_ui(self) -> None:
-        self.layout = QVBoxLayout(self)
-
-        self.header = MainHeaderWidget(self)
-
-        self.body_widget = QWidget()
-        self.body_layout = QHBoxLayout(self.body_widget)
-        self.body_layout.setContentsMargins(0, 0, 0, 0)
-
-        self.side_menu = SideMenu()
-        self.cards_container = MainBodyScrollArea(self)
-        self.cards_container.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-
-        self.body_layout.addWidget(self.side_menu)
-        self.body_layout.addWidget(self.cards_container)
-
-        self.layout.addWidget(self.header)
-        self.layout.addWidget(self.body_widget)
-
-
 class SideMenu(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -139,4 +89,3 @@ class SideMenu(QWidget):
         self.settings_btn = QPushButton('Настройки')
 
         layout.addWidget(self.settings_btn, alignment=Qt.AlignmentFlag.AlignLeft)
-
