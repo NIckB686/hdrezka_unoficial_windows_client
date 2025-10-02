@@ -4,14 +4,16 @@ from PySide6.QtWidgets import QFrame, QSizePolicy, QVBoxLayout, QLabel
 
 
 class CardFrameWidget(QFrame):
-    clicked = Signal()
-
-    def __init__(self, name: str, text: str, link: str) -> None:
+    clicked = Signal(str)
+    def __init__(self, name: str, text: str, link: str):
         super().__init__()
         self._setup_ui(name, text)
         self.url = link
 
-    def _setup_ui(self, name: str, text: str) -> None:
+    def on_clicked(self):
+        self.clicked.emit(self.url)
+
+    def _setup_ui(self, name: str, text: str):
         self.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Minimum)
         self.setFixedWidth(171)
         self.setContentsMargins(5, 5, 5, 5)

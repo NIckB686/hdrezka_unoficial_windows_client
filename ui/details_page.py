@@ -2,8 +2,8 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QScrollArea, QApplication, Q
 
 
 class ViewPage(QWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self):
+        super().__init__()
         self._setup_ui()
 
     def _setup_ui(self):
@@ -14,8 +14,8 @@ class ViewPage(QWidget):
 
 
 class _ScrollBody(QScrollArea):
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self):
+        super().__init__()
         self._setup_ui()
 
     def _setup_ui(self):

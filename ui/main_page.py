@@ -2,6 +2,8 @@ from PySide6.QtCore import Signal, Qt
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QPushButton, QLineEdit, QSizePolicy, QWidget, QScrollArea, \
     QGridLayout, QVBoxLayout
 
+from ui.card_frame_widget import CardFrameWidget
+
 
 class MainHeaderWidget(QFrame):
     menu_clicked = Signal()
@@ -75,12 +77,16 @@ class MainBodyScrollArea(QScrollArea):
         self.setWidget(self.main_widget)
         self.setWidgetResizable(True)
 
-    def add_widget(self, widget: QWidget) -> None:
-        self.content_layout.addWidget(widget, self.row, self.col)
+    def add_card(self, card: CardFrameWidget) -> None:
+        card.clicked.connect(self.connect_card_clicked_signal)
+        self.content_layout.addWidget(card, self.row, self.col)
         self.col += 1
         if self.col == 4:
             self.row += 1
             self.col = 0
+
+    def connect_card_clicked_signal(self):
+        ...
 
     def remove_widget(self, widget: QWidget) -> None:
         self.content_layout.removeWidget(widget)
