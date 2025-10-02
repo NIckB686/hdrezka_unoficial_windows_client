@@ -11,6 +11,7 @@ from .card_frame_widget import CardFrameWidget
 logger = logging.getLogger(__name__)
 
 
+
 class CardFactory(QObject):
     new_card = Signal(CardFrameWidget)
 
