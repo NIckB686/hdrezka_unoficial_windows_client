@@ -27,10 +27,10 @@ class CardFactory(QObject):
 
     async def _load_pixmap(self, widget: CardFrameWidget, url: str):
         try:
-            data = await self._gw.fetch_image(url)
+            data = await self._gw.request(url)
             pix = QPixmap()
             pix.loadFromData(data)
             widget.set_pixmap(pix)
-            logger.debug('Добавлен pixmap')
+            logger.debug('Добавлен pixmap карточки')
         except Exception:
             widget.set_error()

@@ -1,53 +1,45 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QScrollArea, QApplication, QHBoxLayout, QLabel, QFormLayout
+import asyncio
+
+from PySide6.QtGui import QPixmap
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QScrollArea, QLabel, QHBoxLayout, QGridLayout, QApplication
+
+from network_layer import gateway
 
 
-class ViewPage(QWidget):
-    def __init__(self):
+class DetailsPageScrollArea(QScrollArea):
+    def __init__(self, url):
         super().__init__()
+        self.url = url
+        self.gw = gateway
         self._setup_ui()
 
-    def _setup_ui(self):
-        self.layout = QVBoxLayout(self)
-        self.scroll_body = _ScrollBody()
-
-        self.layout.addWidget(self.scroll_body)
-
-
-class _ScrollBody(QScrollArea):
-    def __init__(self):
-        super().__init__()
-        self._setup_ui()
 
     def _setup_ui(self):
         self.content_widget = QWidget()
-        self.main_layout = QVBoxLayout(self.content_widget)
+        self.wrapper_layout = QHBoxLayout(self.content_widget)
+        self.main_layout = QVBoxLayout()
 
-        self.info_widget = QWidget()
-        self.info_layout = QHBoxLayout(self.info_widget)
+        self.info_table_layout = QGridLayout()
+
         self.poster = QLabel()
-        self.attrs_layout = QFormLayout()
-        self.info_layout.addWidget(self.poster)
-        self.info_layout.addLayout(self.attrs_layout)
+        asyncio.create_task(self._load_poster())
 
-        self.description_widget = QWidget()
+        self.info_table_layout.addWidget(self.poster, 1, 1)
 
-        self.trailer_widget = QWidget()
-
-        self.watch_widget = QWidget()
-
-        self.also_watch_widget = QWidget()
-
-        self.main_layout.addWidget(self.info_widget)
-        self.main_layout.addWidget(self.description_widget)
-        self.main_layout.addWidget(self.trailer_widget)
-        self.main_layout.addWidget(self.watch_widget)
-        self.main_layout.addWidget(self.also_watch_widget)
+        self.main_layout.addLayout(self.info_table_layout)
+        self.wrapper_layout.addLayout(self.main_layout)
 
         self.setWidget(self.content_widget)
 
+    async def _load_poster(self):
+        data = await self.gw.request(self.url)
+        pix = QPixmap()
+        pix.loadFromData(data)
+        self.poster.setPixmap(pix)
 
 if __name__ == '__main__':
     app = QApplication()
-    window = ViewPage()
+    window = DetailsPageScrollArea('https://rezka.ag/films/thriller/79790-poyman-s-polichnym-2025-latest.html')
     window.show()
-    app.exec()
+
+

@@ -1,17 +1,23 @@
+import logging
+
 from PySide6.QtCore import Signal
-from PySide6.QtGui import QPixmap, Qt
+from PySide6.QtGui import QPixmap, Qt, QMouseEvent
 from PySide6.QtWidgets import QFrame, QSizePolicy, QVBoxLayout, QLabel
 
+logger = logging.getLogger(__name__)
 
 class CardFrameWidget(QFrame):
     clicked = Signal(str)
+
     def __init__(self, name: str, text: str, link: str):
         super().__init__()
         self._setup_ui(name, text)
         self.url = link
 
-    def on_clicked(self):
-        self.clicked.emit(self.url)
+    def mousePressEvent(self, event: QMouseEvent):
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.clicked.emit(self.url)
+        super().mousePressEvent(event)
 
     def _setup_ui(self, name: str, text: str):
         self.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Minimum)

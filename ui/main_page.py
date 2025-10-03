@@ -1,38 +1,26 @@
+import asyncio
+import logging
+
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QHBoxLayout, QPushButton, QSizePolicy, QWidget, QScrollArea, \
     QGridLayout, QVBoxLayout
+from qasync import asyncSlot
 
+from network_layer import gateway
 from ui.card_frame_widget import CardFrameWidget
+from ui.cards_factory import CardFactory
+
+logger = logging.getLogger(__name__)
 
 
-class MainPage(QWidget):
-    def __init__(self) -> None:
+class MainPageScrollArea(QScrollArea):
+    def __init__(self):
         super().__init__()
+        self.cards_factory = CardFactory()
+        self.gw = gateway
         self._setup_ui()
-
-    def _setup_ui(self) -> None:
-        self.layout = QVBoxLayout(self)
-
-        self.body_widget = QWidget()
-        self.body_layout = QHBoxLayout(self.body_widget)
-        self.body_layout.setContentsMargins(0, 0, 0, 0)
-
-        # self.side_menu = SideMenu()
-        self.cards_container = MainBodyScrollArea(self)
-        self.cards_container.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-
-        # self.body_layout.addWidget(self.side_menu)
-        self.body_layout.addWidget(self.cards_container)
-
-        self.layout.addWidget(self.body_widget)
-
-
-class MainBodyScrollArea(QScrollArea):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.row = 0
-        self.col = 0
-        self._setup_ui()
+        self.connect_signals()
+        asyncio.create_task(self.put_cards())
 
     def _setup_ui(self) -> None:
         self.main_widget = QWidget()
@@ -51,16 +39,32 @@ class MainBodyScrollArea(QScrollArea):
         self.setWidget(self.main_widget)
         self.setWidgetResizable(True)
 
-    def add_card(self, card: CardFrameWidget) -> None:
-        card.clicked.connect(self.connect_card_clicked_signal)
-        self.content_layout.addWidget(card, self.row, self.col)
-        self.col += 1
-        if self.col == 4:
-            self.row += 1
-            self.col = 0
+    def connect_signals(self):
+        self.cards_factory.new_card.connect(self.add_card())
+        logger.debug('Добавлен слот создания карточек')
+
+    async def put_cards(self):
+        logger.debug('Начато добавление карточек')
+        cards = await self.gw.fetch_listening(self.gw.build_url())
+        self.cards_factory.build_card(cards)
+
+    def add_card(self):
+        row, col = 0, 0
+
+        def inner(card: CardFrameWidget):
+            nonlocal row, col
+            card.clicked.connect(self.on_card_clicked)
+            self.content_layout.addWidget(card, row, col)
+            col += 1
+            if col == 4:
+                row += 1
+                col = 0
+
+        return inner
 
     # Метод нужно будет переименовать
-    def connect_card_clicked_signal(self):
+    @asyncSlot()
+    async def on_card_clicked(self):
         ...
 
     def remove_widget(self, widget: QWidget) -> None:

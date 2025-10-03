@@ -1,6 +1,12 @@
-from qasync import QEventLoop
+import asyncio
+import logging
+import sys
 
-from ui.myInterface import *
+from qasync import (QEventLoop,
+                    QApplication,
+                    )
+
+from ui.myInterface import MainWindow
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -11,14 +17,13 @@ logging.getLogger('qasync').setLevel(logging.WARNING)
 
 
 async def _build_window() -> None:
-    factory = CardFactory()
     app.window = MainWindow()
     app.window.show()
 
 
 if __name__ == '__main__':
     logger.info('Начало работы приложения')
-    app = QApplication()
+    app = QApplication(sys.argv)
     loop = QEventLoop(app)
     asyncio.set_event_loop(loop)
     with loop:

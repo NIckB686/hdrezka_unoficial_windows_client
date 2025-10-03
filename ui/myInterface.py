@@ -2,12 +2,13 @@ import asyncio
 import logging
 
 from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QWidget, QStackedWidget, QApplication, QMainWindow, QPushButton, QHBoxLayout, QSizePolicy, \
+from PySide6.QtWidgets import QWidget, QStackedWidget, QMainWindow, QPushButton, QHBoxLayout, QSizePolicy, \
     QLineEdit, QFrame, QVBoxLayout
+from qasync import asyncClose
 
 from network_layer import gateway
 from ui.cards_factory import CardFactory
-from ui.main_page import MainPage
+from ui.main_page import MainPageScrollArea
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +19,6 @@ class MainWindow(QMainWindow):
         self.gw = gateway
         self.cards_factory = CardFactory()
         self._setup_ui()
-        self._connect_signals()
 
     def _setup_ui(self):
         self.header = HeaderWidget()
@@ -26,22 +26,11 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.central_widget)
         self.resize(1000, 1000)
 
-        asyncio.create_task(self.put_cards())
-
-    def _connect_signals(self) -> None:
-        self.cards_factory.new_card.connect(self.central_widget.body.main_page.cards_container.add_card)
-        logger.debug('Сигнал присоединён к слоту')
-
-    async def put_cards(self):
-        logger.debug('Начато добавление карточек')
-        cards = await self.gw.fetch_listening(self.gw.build_url())
-        self.cards_factory.build_card(cards)
-
     async def async_close(self):
         await self.gw.close_session()
-        QApplication.quit()
 
-    def closeEvent(self, event):
+    @asyncClose
+    async def closeEvent(self, event):
         asyncio.create_task(self.async_close())
         super().closeEvent(event)
 
@@ -55,6 +44,7 @@ class BodyWidget(QWidget):
         self.layout = QVBoxLayout(self)
         self.header = HeaderWidget()
         self.body = BodyStackedWidget()
+
         self.layout.addWidget(self.header)
         self.layout.addWidget(self.body)
 
@@ -113,10 +103,11 @@ class BodyStackedWidget(QStackedWidget):
         self._setup_ui()
 
     def _setup_ui(self):
-        self.main_page = MainPage()
+        self.main_page = MainPageScrollArea()
         self.addWidget(self.main_page)
 
         self.setCurrentIndex(0)
 
     def change_page(self, widget: QWidget) -> None:
+        logger.debug('Страница изменена')
         self.setCurrentWidget(widget)
