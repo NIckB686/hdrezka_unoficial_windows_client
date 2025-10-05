@@ -8,7 +8,7 @@ from qasync import asyncSlot
 
 from network.parser import Parser
 from network.url_builder import URLBuilder
-from ui.card_frame_widget import CardFrameWidget
+from ui.widgets.card_frame_widget import CardFrameWidget
 from ui.cards_factory import CardFactory
 
 logger = logging.getLogger(__name__)

@@ -18,6 +18,7 @@ class CardFrameWidget(QFrame):
         self._setup_ui()
 
     def mousePressEvent(self, event: QMouseEvent):
+        logger.debug('Левая кнопка нажата')
         if event.button() == Qt.MouseButton.LeftButton:
             self.clicked.emit(self.url)
         super().mousePressEvent(event)

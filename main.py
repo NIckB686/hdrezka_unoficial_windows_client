@@ -6,11 +6,11 @@ from qasync import (QEventLoop,
                     QApplication,
                     )
 
-from ui.myInterface import MainWindow
+from ui.widgets.myInterface import MainWindow
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,
     format='%(asctime)s [%(levelname)s] %(name)s: %(message)s',
 )
 logging.getLogger('qasync').setLevel(logging.WARNING)

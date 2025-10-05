@@ -9,7 +9,7 @@ from qasync import asyncClose
 from network.aiorequests import gateway
 from ui.cards_factory import CardFactory
 # from ui.details_page import DetailsPageScrollArea
-from ui.main_page import MainPageScrollArea
+from ui.widgets.main_page import MainPageScrollArea
 
 logger = logging.getLogger(__name__)
 
