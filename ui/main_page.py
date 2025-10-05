@@ -6,7 +6,8 @@ from PySide6.QtWidgets import QHBoxLayout, QPushButton, QSizePolicy, QWidget, QS
     QGridLayout, QVBoxLayout
 from qasync import asyncSlot
 
-from network_layer import gateway
+from network.parser import Parser
+from network.url_builder import URLBuilder
 from ui.card_frame_widget import CardFrameWidget
 from ui.cards_factory import CardFactory
 
@@ -17,7 +18,7 @@ class MainPageScrollArea(QScrollArea):
     def __init__(self):
         super().__init__()
         self.cards_factory = CardFactory()
-        self.gw = gateway
+        self.parser = Parser()
         self._setup_ui()
         self.connect_signals()
         asyncio.create_task(self.put_cards())
@@ -45,7 +46,7 @@ class MainPageScrollArea(QScrollArea):
 
     async def put_cards(self):
         logger.debug('Начато добавление карточек')
-        cards = await self.gw.fetch_listening(self.gw.build_url())
+        cards = await self.parser.fetch_listening(URLBuilder.build_url())
         self.cards_factory.build_card(cards)
 
     def add_card(self):

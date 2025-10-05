@@ -6,20 +6,23 @@ from PySide6.QtWidgets import QFrame, QSizePolicy, QVBoxLayout, QLabel
 
 logger = logging.getLogger(__name__)
 
+
 class CardFrameWidget(QFrame):
     clicked = Signal(str)
 
     def __init__(self, name: str, text: str, link: str):
         super().__init__()
-        self._setup_ui(name, text)
+        self.name = name
+        self.text = text
         self.url = link
+        self._setup_ui()
 
     def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.MouseButton.LeftButton:
             self.clicked.emit(self.url)
         super().mousePressEvent(event)
 
-    def _setup_ui(self, name: str, text: str):
+    def _setup_ui(self):
         self.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Minimum)
         self.setFixedWidth(171)
         self.setContentsMargins(5, 5, 5, 5)
@@ -29,11 +32,11 @@ class CardFrameWidget(QFrame):
         self._poster.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         self._poster.setFixedSize(166, 250)
 
-        self._title = QLabel(name)
+        self._title = QLabel(self.name)
         self._title.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Preferred)
         self._title.setWordWrap(True)
 
-        self._attrs = QLabel(text)
+        self._attrs = QLabel(self.text)
         self._attrs.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
 
         self.layout.addWidget(self._poster, alignment=Qt.AlignmentFlag.AlignCenter)

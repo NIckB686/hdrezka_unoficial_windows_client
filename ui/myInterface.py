@@ -3,11 +3,12 @@ import logging
 
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget, QStackedWidget, QMainWindow, QPushButton, QHBoxLayout, QSizePolicy, \
-    QLineEdit, QFrame, QVBoxLayout
+    QLineEdit, QVBoxLayout
 from qasync import asyncClose
 
-from network_layer import gateway
+from network.aiorequests import gateway
 from ui.cards_factory import CardFactory
+# from ui.details_page import DetailsPageScrollArea
 from ui.main_page import MainPageScrollArea
 
 logger = logging.getLogger(__name__)
@@ -21,7 +22,6 @@ class MainWindow(QMainWindow):
         self._setup_ui()
 
     def _setup_ui(self):
-        self.header = HeaderWidget()
         self.central_widget = BodyWidget()
         self.setCentralWidget(self.central_widget)
         self.resize(1000, 1000)
@@ -49,7 +49,7 @@ class BodyWidget(QWidget):
         self.layout.addWidget(self.body)
 
 
-class HeaderWidget(QFrame):
+class HeaderWidget(QWidget):
     menu_clicked = Signal()
     continue_clicked = Signal()
     profile_clicked = Signal()
@@ -103,6 +103,7 @@ class BodyStackedWidget(QStackedWidget):
         self._setup_ui()
 
     def _setup_ui(self):
+        # self.main_page = DetailsPageScrollArea('https://rezka.ag/films/thriller/79790-poyman-s-polichnym-2025-latest.html')
         self.main_page = MainPageScrollArea()
         self.addWidget(self.main_page)
 

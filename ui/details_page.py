@@ -1,9 +1,9 @@
 import asyncio
 
 from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QScrollArea, QLabel, QHBoxLayout, QGridLayout, QApplication
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QScrollArea, QLabel, QHBoxLayout, QGridLayout
 
-from network_layer import gateway
+from network.aiorequests import gateway
 
 
 class DetailsPageScrollArea(QScrollArea):
@@ -12,7 +12,6 @@ class DetailsPageScrollArea(QScrollArea):
         self.url = url
         self.gw = gateway
         self._setup_ui()
-
 
     def _setup_ui(self):
         self.content_widget = QWidget()
@@ -24,22 +23,18 @@ class DetailsPageScrollArea(QScrollArea):
         self.poster = QLabel()
         asyncio.create_task(self._load_poster())
 
-        self.info_table_layout.addWidget(self.poster, 1, 1)
+        self.info_table_layout.addWidget(self.poster)
 
         self.main_layout.addLayout(self.info_table_layout)
         self.wrapper_layout.addLayout(self.main_layout)
 
         self.setWidget(self.content_widget)
 
+    def load_page(self):
+        ...
+
     async def _load_poster(self):
         data = await self.gw.request(self.url)
         pix = QPixmap()
         pix.loadFromData(data)
         self.poster.setPixmap(pix)
-
-if __name__ == '__main__':
-    app = QApplication()
-    window = DetailsPageScrollArea('https://rezka.ag/films/thriller/79790-poyman-s-polichnym-2025-latest.html')
-    window.show()
-
-
