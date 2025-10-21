@@ -8,7 +8,7 @@ from qasync import asyncClose
 
 from network.aiorequests import gateway
 from ui.cards_factory import CardFactory
-# from ui.details_page import DetailsPageScrollArea
+# from ui.details_page import _DetailsPage
 from ui.widgets.main_page import MainPageScrollArea
 
 logger = logging.getLogger(__name__)
@@ -103,7 +103,7 @@ class BodyStackedWidget(QStackedWidget):
         self._setup_ui()
 
     def _setup_ui(self):
-        # self.main_page = DetailsPageScrollArea('https://rezka.ag/films/thriller/79790-poyman-s-polichnym-2025-latest.html')
+        # self.main_page = _DetailsPage('https://rezka.ag/films/thriller/79790-poyman-s-polichnym-2025-latest.html')
         self.main_page = MainPageScrollArea()
         self.addWidget(self.main_page)
 
